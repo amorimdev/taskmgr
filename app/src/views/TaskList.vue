@@ -2,7 +2,31 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12">
+        <v-card dense class="mb-3">
+          <v-card-title>New Task</v-card-title>
+          <v-card-text>
+            <v-form ref="form" v-model="valid">
+                <v-row>
+                  <v-col cols="12" md="7">
+                    <v-text-field dense outlined :rules="rules.required" v-model="newTask.description" label="Enter the task description" name="description" type="text" />
+                  </v-col>
+                  <v-col cols="12" md="4">
+                    <v-select dense :rules="rules.required" :items="projectList" v-model="newTask.project_id" item-text="name" item-value="id" label="Assign to the project" outlined></v-select>
+                  </v-col>
+                  <v-col cols="12" md="1">
+                      <v-btn :disabled="!valid" @click="createTask(newTask)" fab small color="green" :loading="newTask.creating">
+                        <v-icon class="white--text">mdi-plus</v-icon>
+                      </v-btn>
+                  </v-col>
+                </v-row>
+            </v-form>
+          </v-card-text>
+        </v-card>
+
         <v-card dense>
+
+          <v-card-title>My Tasks</v-card-title>
+
           <v-card-text>
 
             <v-list
@@ -22,7 +46,7 @@
                     </v-list-item-content>
 
                     <v-list-item-avatar>
-                      <v-btn fab color="red" :loading="task.deleting" @click="removeTask(i)" v-if="!task.is_closed">
+                      <v-btn fab color="red" :loading="task.deleting" @click="removeTask(task, i)" v-if="!task.is_closed">
                         <v-icon class="white--text">mdi-delete</v-icon>
                       </v-btn>
                       <v-avatar v-else  color="green">
@@ -37,6 +61,12 @@
             </v-list>
           </v-card-text>
         </v-card>
+
+        <v-snackbar v-if="snackbar" :top="true" v-model="snackbar.show" :multi-line="true" :color="snackbar.color">
+          {{ snackbar.text }}
+          <v-btn text @click="snackbar = null">Close</v-btn>
+        </v-snackbar>
+
       </v-col>
     </v-row>
   </v-container>
@@ -49,29 +79,71 @@
   export default {
 
     data: () => ({
+      newTask: {},
+      valid: false,
+      rules: {
+        required: [
+          v => !!v || 'Required field'
+        ]
+      },
+      snackbar: null
     }),
 
     computed: {
       ...mapGetters([
-        'taskList'
+        'taskList',
+        'projectList'
       ]),
     },
 
     methods: {
 
+      showMessage(text, color) {
+        this.snackbar = {
+          text: text,
+          color: color,
+          show: true
+        }
+      },
+
       closeTask(task) {
-        task.closing = true
-        this.$http({ url: `/task/${task.id}/close`, method: 'put'}).then(() => {
-          task.closing = false
+        this.$set(task,'closing', true)
+        this.$http({ url: `/task/${task.id}/close`, method: 'put'}).then(response => {
+          this.showMessage(response.data.message, 'success')
+          task.finished_at = response.data.task.finished_at
           this.$delete(task,'closing')
         }).catch(error => {
           this.$delete(task,'closing')
-          console.log(error.response.data)
+          let data = error.response.data || {}
+          this.showMessage(data.message || 'Fail to close task', 'error')
         })
       },
 
-      removeTask(index) {
-        this.taskList.splice(index, 1);
+      createTask(task) {
+        this.$set(task,'creating', true)
+        this.$http({ url: '/task', method: 'post', data: task}).then(response => {
+          this.taskList.push(response.data.task)
+          this.showMessage(response.data.message, 'success')
+          this.$delete(task,'creating')
+          this.$refs.form.reset()
+        }).catch(error => {
+          this.$delete(task,'creating')
+          let data = error.response.data || {}
+          this.showMessage(data.message || 'Fail to create task', 'error')
+        })
+      },
+
+      removeTask(task, index) {
+        this.$set(task,'deleting', true)
+        this.$http({ url: `/task/${task.id}`, method: 'delete'}).then(response => {
+          this.showMessage(response.data.message, 'success')
+          this.taskList.splice(index, 1);
+          this.$delete(task,'deleting')
+        }).catch(error => {
+          this.$delete(task,'deleting')
+          let data = error.response.data || {}
+          this.showMessage(data.message || 'Fail to close task', 'error')
+        })
       },
 
     },

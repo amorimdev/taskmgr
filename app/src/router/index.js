@@ -49,6 +49,10 @@ router.beforeEach((to, from, next) => {
       store.dispatch('loadTasks')
     }
 
+    if (!store.getters.projectList) {
+      store.dispatch('loadProjects')
+    }
+
     next()
   }
 })

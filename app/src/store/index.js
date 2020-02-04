@@ -11,7 +11,7 @@ export default new Vuex.Store({
     drawer: null,
     current_route: null,
     tasks: null,
-    projects: []
+    projects: null
   },
   mutations: {
     setDrawer(state, value) {
@@ -28,6 +28,9 @@ export default new Vuex.Store({
     },
     setTasks(state, value) {
       state.tasks = value
+    },
+    setProjects(state, value) {
+      state.projects = value
     }
   },
   getters: {
@@ -39,6 +42,9 @@ export default new Vuex.Store({
     },
     taskList(state) {
       return state.tasks
+    },
+    projectList(state) {
+      return state.projects
     },
     isAuthenticated(state) {
       return state.token !== null
@@ -72,6 +78,18 @@ export default new Vuex.Store({
           reject(error)
         })
       })
+    },
+
+    loadProjects({ commit }) {
+      return new Promise((resolve, reject) => {
+        http({ url: "/projects", method: 'get' }).then(response => {
+          commit('setProjects', response.data.projects)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
     }
+
   },
 })
