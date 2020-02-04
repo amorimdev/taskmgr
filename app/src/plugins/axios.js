@@ -16,4 +16,17 @@ http.interceptors.request.use(config => {
   Promise.reject(error)
 })
 
+http.interceptors.response.use(
+  response => response,
+  error => {
+    if ([400, 401].includes(error.response.status)) {
+      store.dispatch('logout')
+      window.location.href = '/'
+      return
+    } else {
+      return Promise.reject(error)
+    }
+  }
+)
+
 export default http

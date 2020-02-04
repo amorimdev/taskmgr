@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="isAuthenticated">
     <v-row justify="center">
       <v-col cols="12">
         <v-card dense class="mb-3">
@@ -92,7 +92,8 @@
     computed: {
       ...mapGetters([
         'taskList',
-        'projectList'
+        'projectList',
+        'isAuthenticated'
       ]),
     },
 

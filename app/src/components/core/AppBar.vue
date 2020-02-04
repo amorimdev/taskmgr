@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar
+  <v-app-bar v-if="isAuthenticated"
     id="core-app-bar"
     absolute
     app
@@ -15,10 +15,22 @@
     </v-toolbar-title>
 
     <v-spacer />
+
+    <v-toolbar-items>
+        <v-row align="center" class="mx-5">
+          <v-btn icon dark @click="logout">
+            <v-icon color="tertiary">
+              mdi-logout
+            </v-icon>
+            Logout
+          </v-btn>
+        </v-row>
+    </v-toolbar-items>
   </v-app-bar>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
 
   export default {
     data: () => ({
@@ -26,13 +38,8 @@
       responsive: false
     }),
 
-    watch: {
-      '$route' (val) {
-        this.title = val.name
-      }
-    },
-
     computed: {
+      ...mapGetters(['isAuthenticated']),
       currentRoute() {
         return this.$store.getters.currentRoute
       }
@@ -58,6 +65,12 @@
         } else {
           this.responsive = false
         }
+      },
+
+      logout() {
+        this.$store.dispatch('logout').then(() => {
+          this.$router.push({ path: '/login' })
+        })
       }
     }
   }

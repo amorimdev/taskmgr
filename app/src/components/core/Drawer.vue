@@ -1,6 +1,7 @@
 <template>
   <v-navigation-drawer
     id="app-drawer"
+    v-if="isAuthenticated"
     v-model="inputValue"
     app
     color="grey darken-4"
@@ -56,7 +57,8 @@
 
     computed: {
       ...mapGetters([
-        'openedTaskList'
+        'openedTaskList',
+        'isAuthenticated'
       ]),
       inputValue: {
         get () {

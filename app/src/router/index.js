@@ -41,10 +41,7 @@ router.beforeEach((to, from, next) => {
     store.commit('setToken', token)
   }
 
-  if (to.meta.secure && !store.getters.isAuthenticated) {
-    next('/login')
-  } else {
-
+  if (store.getters.isAuthenticated) {
     if (!store.getters.taskList) {
       store.dispatch('loadTasks')
     }
@@ -52,7 +49,11 @@ router.beforeEach((to, from, next) => {
     if (!store.getters.projectList) {
       store.dispatch('loadProjects')
     }
+  }
 
+  if (to.meta.secure && !store.getters.isAuthenticated) {
+    next('/login')
+  } else {
     next()
   }
 })

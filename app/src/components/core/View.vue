@@ -14,7 +14,7 @@
 
     metaInfo () {
       return {
-        title: 'Icatu - GestÃ£o de Contrato'
+        title: 'TaskMgr'
       }
     }
   }

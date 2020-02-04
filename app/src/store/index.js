@@ -69,6 +69,16 @@ export default new Vuex.Store({
 
     },
 
+    logout({ commit }) {
+
+      return new Promise(resolve => {
+        localStorage.removeItem('token')
+        commit('setToken', null)
+        resolve()
+      })
+
+    },
+
     loadTasks({ commit }) {
       return new Promise((resolve, reject) => {
         http({ url: "/tasks", method: 'get' }).then(response => {
