@@ -18,7 +18,19 @@
 
     <v-toolbar-items>
         <v-row align="center" class="mx-5">
-          <v-btn icon dark @click="logout">
+          <v-tooltip left dark>
+            <template v-slot:activator="{ on }">
+              <v-avatar class="mr-5" color="red" size="32" v-on="on">
+                <span class="white--text">{{ getUser.name.split(" ", 2).map((n)=>n[0]).join("") }}</span>
+              </v-avatar>
+            </template>
+            <span>
+              {{ getUser.name }}<br>
+              {{ getUser.email }}
+            </span>
+          </v-tooltip>
+
+          <v-btn icon dark @click="logout" class="ml-2">
             <v-icon color="tertiary">
               mdi-logout
             </v-icon>
@@ -39,10 +51,10 @@
     }),
 
     computed: {
-      ...mapGetters(['isAuthenticated']),
+      ...mapGetters(['isAuthenticated', 'getUser']),
       currentRoute() {
         return this.$store.getters.currentRoute
-      }
+      },
     },
 
     mounted () {

@@ -11,6 +11,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Login.vue')
   },
   {
+    path: '/register',
+    name: 'Register',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Register.vue')
+  },
+  {
     path: '/',
     name: 'Tasks',
     component: () => import(/* webpackChunkName: "tasklist" */ '../views/TaskList.vue'),
@@ -21,7 +26,10 @@ const routes = [
   {
     path: '/projects',
     name: 'Projects',
-    component: () => import(/* webpackChunkName: "about" */ '../views/ProjectList.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/ProjectList.vue'),
+    meta: {
+      secure: true
+    }
   }
 ]
 
@@ -36,9 +44,11 @@ router.beforeEach((to, from, next) => {
   store.commit('setCurrentRoute', to)
 
   let token = localStorage.getItem('token')
+  let user = localStorage.getItem('user')
 
   if (!store.getters.getToken && token) {
     store.commit('setToken', token)
+    store.commit('setUser', JSON.parse(user))
   }
 
   if (store.getters.isAuthenticated) {

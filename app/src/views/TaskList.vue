@@ -42,16 +42,22 @@
 
                     <v-list-item-content>
                       <v-list-item-title :class="{'grey--text text--lighten-1': task.is_closed}">{{ task.description }}</v-list-item-title>
-                      <v-list-item-subtitle :class="{'grey--text text--lighten-1': task.is_closed}">{{ task.created_at }} - {{ task.finished_at }} <v-chip x-small>{{ task.project.name }}</v-chip></v-list-item-subtitle>
+                      <v-list-item-subtitle :class="{'grey--text text--lighten-1': task.is_closed}">Created {{ task.created_at | str2date | relativeTime }} <v-chip x-small>{{ task.project.name }}</v-chip></v-list-item-subtitle>
                     </v-list-item-content>
 
                     <v-list-item-avatar>
                       <v-btn fab color="red" :loading="task.deleting" @click="removeTask(task, i)" v-if="!task.is_closed">
                         <v-icon class="white--text">mdi-delete</v-icon>
                       </v-btn>
-                      <v-avatar v-else  color="green">
-                        <v-icon class="white--text">mdi-check</v-icon>
-                      </v-avatar>
+                      <v-tooltip left v-else>
+                        <template v-slot:activator="{ on }">
+                          <v-avatar color="green" v-on="on">
+                            <v-icon class="white--text">mdi-check</v-icon>
+                          </v-avatar>
+                        </template>
+                        <span>Closed at {{ task.finished_at | str2date | formatdate('MMMM Do YYYY, h:mm:ss a') }}</span>
+                      </v-tooltip>
+
                     </v-list-item-avatar>
                 </v-list-item>
 
@@ -61,12 +67,6 @@
             </v-list>
           </v-card-text>
         </v-card>
-
-        <v-snackbar v-if="snackbar" :top="true" v-model="snackbar.show" :multi-line="true" :color="snackbar.color">
-          {{ snackbar.text }}
-          <v-btn text @click="snackbar = null">Close</v-btn>
-        </v-snackbar>
-
       </v-col>
     </v-row>
   </v-container>
@@ -85,8 +85,7 @@
         required: [
           v => !!v || 'Required field'
         ]
-      },
-      snackbar: null
+      }
     }),
 
     computed: {
@@ -99,24 +98,16 @@
 
     methods: {
 
-      showMessage(text, color) {
-        this.snackbar = {
-          text: text,
-          color: color,
-          show: true
-        }
-      },
-
       closeTask(task) {
         this.$set(task,'closing', true)
         this.$http({ url: `/task/${task.id}/close`, method: 'put'}).then(response => {
-          this.showMessage(response.data.message, 'success')
+          this.$showMessage(response.data.message, 'success')
           task.finished_at = response.data.task.finished_at
           this.$delete(task,'closing')
         }).catch(error => {
           this.$delete(task,'closing')
           let data = error.response.data || {}
-          this.showMessage(data.message || 'Fail to close task', 'error')
+          this.$showMessage(data.message || 'Fail to close task', 'error')
         })
       },
 
@@ -124,26 +115,26 @@
         this.$set(task,'creating', true)
         this.$http({ url: '/task', method: 'post', data: task}).then(response => {
           this.taskList.push(response.data.task)
-          this.showMessage(response.data.message, 'success')
+          this.$showMessage(response.data.message, 'success')
           this.$delete(task,'creating')
           this.$refs.form.reset()
         }).catch(error => {
           this.$delete(task,'creating')
           let data = error.response.data || {}
-          this.showMessage(data.message || 'Fail to create task', 'error')
+          this.$showMessage(data.message || 'Fail to create task', 'error')
         })
       },
 
       removeTask(task, index) {
         this.$set(task,'deleting', true)
         this.$http({ url: `/task/${task.id}`, method: 'delete'}).then(response => {
-          this.showMessage(response.data.message, 'success')
+          this.$showMessage(response.data.message, 'success')
           this.taskList.splice(index, 1);
           this.$delete(task,'deleting')
         }).catch(error => {
           this.$delete(task,'deleting')
           let data = error.response.data || {}
-          this.showMessage(data.message || 'Fail to close task', 'error')
+          this.$showMessage(data.message || 'Fail to close task', 'error')
         })
       },
 

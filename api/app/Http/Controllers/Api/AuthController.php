@@ -33,7 +33,8 @@ class AuthController extends Controller
         ];
 
         return response()->json([
-            'token' => JWT::encode($payload, env('JWT_KEY'))
+            'token' => JWT::encode($payload, env('JWT_KEY')),
+            'user' => $user
         ], 200);
     }
 
@@ -45,12 +46,11 @@ class AuthController extends Controller
             'password'  => 'required'
         ]);
 
-        try {
-            $user = new User($request->only(['name', 'email', 'password']));
-            $user->save();
-            return response()->json(['message' => 'Sucess'], 200);
-        } catch (Exception $e) {
-            return response()->json(['message' => 'Error', 'error' => $e->getMessage()], 400);
-        }
+        $user = new User($request->only(['name', 'email', 'password']));
+        $user->save();
+
+        return response()->json([
+            'message' => 'User successfully registred',
+        ], 200);
     }
 }

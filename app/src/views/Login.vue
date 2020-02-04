@@ -16,6 +16,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <v-btn to="/register" text>Register</v-btn>
             <v-spacer />
             <v-btn :disabled="!valid" @click="login()" color="orange darken-1" :loading="loading">Login</v-btn>
           </v-card-actions>
@@ -39,13 +40,13 @@ export default {
         v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
       ],
       password: [
-        v => !!v || 'Password is required',
-        v => (v && v.length >= 6) || 'Password must be greater than 6 characters',
+        v => !!v || 'Password is required'
       ]
     }
   }),
 
   methods: {
+
     login() {
       if (this.$refs.form.validate()) {
         this.loading = true
@@ -55,7 +56,8 @@ export default {
           this.$router.push({ path: '/' })
         }).catch(error => {
           this.loading = false
-          console.log(error.response.data)
+          let data = error.response.data || {}
+          this.$showMessage(data.error || 'Fail to login', 'error')
         })
 
       }

@@ -26,11 +26,11 @@ class JWTMiddleware
         } catch(ExpiredException $e) {
             return response()->json([
                 'error' => 'The provided token is expired'
-            ], 400);
+            ], 401);
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'Error decoding token'
-            ], 400);
+            ], 401);
         }
 
         $request->current_user = User::find($credentials->sub);

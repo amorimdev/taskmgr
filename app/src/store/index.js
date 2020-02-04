@@ -11,7 +11,8 @@ export default new Vuex.Store({
     drawer: null,
     current_route: null,
     tasks: null,
-    projects: null
+    projects: null,
+    notification: null
   },
   mutations: {
     setDrawer(state, value) {
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     },
     setProjects(state, value) {
       state.projects = value
+    },
+    addNotification(state, value) {
+      state.notification = value
     }
   },
   getters: {
@@ -51,6 +55,12 @@ export default new Vuex.Store({
     },
     getToken(state) {
       return state.token
+    },
+    getUser(state) {
+      return state.user
+    },
+    notification(state) {
+      return state.notification
     }
   },
 
@@ -60,7 +70,10 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         http({ url: "/login", method: 'post', data: credentials }).then(response => {
           localStorage.setItem("token", response.data.token);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+
           commit('setToken', response.data.token)
+          commit('setUser', response.data.user)
           resolve()
         }).catch(error => {
           reject(error)
@@ -73,7 +86,10 @@ export default new Vuex.Store({
 
       return new Promise(resolve => {
         localStorage.removeItem('token')
+        localStorage.removeItem('user')
+
         commit('setToken', null)
+        commit('setUser', null)
         resolve()
       })
 
@@ -99,6 +115,10 @@ export default new Vuex.Store({
           reject(error)
         })
       })
+    },
+
+    notify({commit}, payload) {
+      commit('addNotification', payload)
     }
 
   },

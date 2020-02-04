@@ -34,7 +34,7 @@
                 <v-list-item :key="project.id">
                     <v-list-item-content>
                       <v-list-item-title>{{ project.name }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ project.created_at }}</v-list-item-subtitle>
+                      <v-list-item-subtitle>Created {{ project.created_at | str2date | relativeTime }}</v-list-item-subtitle>
                     </v-list-item-content>
 
                     <v-list-item-avatar>
@@ -50,12 +50,6 @@
             </v-list>
           </v-card-text>
         </v-card>
-
-        <v-snackbar v-if="snackbar" :top="true" v-model="snackbar.show" :multi-line="true" :color="snackbar.color">
-          {{ snackbar.text }}
-          <v-btn text @click="snackbar = null">Close</v-btn>
-        </v-snackbar>
-
       </v-col>
     </v-row>
   </v-container>
@@ -74,8 +68,7 @@
         required: [
           v => !!v || 'Required field'
         ]
-      },
-      snackbar: null
+      }
     }),
 
     computed: {
@@ -98,26 +91,26 @@
         this.$set(project,'creating', true)
         this.$http({ url: '/project', method: 'post', data: project}).then(response => {
           this.projectList.push(response.data.project)
-          this.showMessage(response.data.message, 'success')
+          this.$showMessage(response.data.message, 'success')
           this.$delete(project,'creating')
           this.$refs.form.reset()
         }).catch(error => {
           this.$delete(project,'creating')
           let data = error.response.data || {}
-          this.showMessage(data.message || 'Fail to create project', 'error')
+          this.$showMessage(data.message || 'Fail to create project', 'error')
         })
       },
 
       deleteProject(project, index) {
         this.$set(project,'deleting', true)
         this.$http({ url: `/project/${project.id}`, method: 'delete'}).then(response => {
-          this.showMessage(response.data.message, 'success')
+          this.$showMessage(response.data.message, 'success')
           this.projectList.splice(index, 1);
           this.$delete(project,'deleting')
         }).catch(error => {
           this.$delete(project,'deleting')
           let data = error.response.data || {}
-          this.showMessage(data.message || 'Fail to remove project', 'error')
+          this.$showMessage(data.message || 'Fail to remove project', 'error')
         })
       },
 

@@ -19,7 +19,7 @@ http.interceptors.request.use(config => {
 http.interceptors.response.use(
   response => response,
   error => {
-    if ([400, 401].includes(error.response.status)) {
+    if ([401].includes(error.response.status)) {
       store.dispatch('logout')
       window.location.href = '/'
       return
