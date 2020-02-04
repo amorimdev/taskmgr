@@ -1,0 +1,21 @@
+version: '3'
+services:
+  web:
+    image: registry.gitlab.com/eduardo-marcolino/taskmgr/app:lastest
+    restart: always
+    networks:
+      - taskmgr
+    ports:
+      - "80:80"
+    links:
+      - api
+
+  api:
+    image: registry.gitlab.com/eduardo-marcolino/taskmgr/api:lastest
+    restart: always
+    networks:
+      - taskmgr
+
+networks:
+  taskmgr:
+    driver: bridge

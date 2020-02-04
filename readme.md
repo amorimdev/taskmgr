@@ -33,3 +33,14 @@ webcomponents or other alternatives)
 Devops and online link to view the project
 1. Build tools (e.g. grunt or gulp)
 2. Unit tests
+
+
+### Building instructions
+
+```bash
+docker build -t registry.gitlab.com/eduardo-marcolino/taskmgr/app:lastest -f Dockerfile .
+```
+
+```bash
+docker build -t registry.gitlab.com/eduardo-marcolino/taskmgr/api:lastest -f api/Dockerfile ./api
+```
