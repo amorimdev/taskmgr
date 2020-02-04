@@ -61,8 +61,11 @@ class TaskController extends Controller
 
         $this->validate($request, [
             'description'  => 'required|max:255',
+            'project_id'  => 'required|integer'
         ]);
 
+        $project = $this->findProjectOrFail($request->input('project_id'));
+        $task->project()->associate($project);
         $task->fill($request->only('description'));
         $task->save();
 
