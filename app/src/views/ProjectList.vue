@@ -38,10 +38,41 @@
                     </v-list-item-content>
 
                     <v-list-item-avatar>
-                      <v-btn fab color="red" dark :loading="project.deleting" @click="deleteProject(project, i)">
-                        <v-icon class="white--text">mdi-delete</v-icon>
-                      </v-btn>
+
+                      <v-menu bottom left>
+                        <template v-slot:activator="{ on }">
+                          <v-btn icon v-on="on">
+                            <v-icon>mdi-dots-vertical</v-icon>
+                          </v-btn>
+                        </template>
+
+                        <v-list>
+                          <v-list-item>
+                            <v-list-item-title>
+                              <v-btn  text small :loading="project.deleting" @click="deleteProject(project, i)">
+                                <v-icon class="red--text">mdi-delete</v-icon> Delete
+                              </v-btn>
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item>
+                            <v-list-item-title>
+                              <v-btn  text small :loading="project.editing" @click="editProject(project)">
+                                <v-icon class="primary--text">mdi-pen</v-icon> Edit
+                              </v-btn>
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
                     </v-list-item-avatar>
+
+                    <v-dialog v-model="project.editing" width="500">
+                      <v-card>
+                        <v-card-title class="headline grey lighten-2" primary-title>
+                          Privacy Policy {{ project.name }}
+                        </v-card-title>
+                      </v-card>
+                    </v-dialog>
+
                 </v-list-item>
 
                 <v-divider v-if="i + 1 < projectList.length" :key="'_'+i"></v-divider>
@@ -52,24 +83,34 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-confirm ref="confirm"></v-confirm>
+    <project-edit ref="projectedit"></project-edit>
   </v-container>
 </template>
 
 <script>
 
   import { mapGetters } from 'vuex'
+  import Confirm from '../components/util/Confirm'
+  import ProjectEdit from '../components/app/ProjectEdit'
 
   export default {
 
     data: () => ({
       newProject: {},
       valid: false,
+      dialog: null,
       rules: {
         required: [
           v => !!v || 'Required field'
         ]
       }
     }),
+
+    components: {
+      'v-confirm': Confirm,
+      'project-edit': ProjectEdit
+    },
 
     computed: {
       ...mapGetters([
@@ -78,14 +119,6 @@
     },
 
     methods: {
-
-      showMessage(text, color) {
-        this.snackbar = {
-          text: text,
-          color: color,
-          show: true
-        }
-      },
 
       createProject(project) {
         this.$set(project,'creating', true)
@@ -102,18 +135,25 @@
       },
 
       deleteProject(project, index) {
-        this.$set(project,'deleting', true)
-        this.$http({ url: `/project/${project.id}`, method: 'delete'}).then(response => {
-          this.$showMessage(response.data.message, 'success')
-          this.projectList.splice(index, 1);
-          this.$delete(project,'deleting')
-        }).catch(error => {
-          this.$delete(project,'deleting')
-          let data = error.response.data || {}
-          this.$showMessage(data.message || 'Fail to remove project', 'error')
+        this.$refs.confirm.open('Are you sure to delete?', 'This record can\'t be recovered', { color: 'red' }).then(confirm => {
+          if(confirm) {
+            this.$set(project,'deleting', true)
+            this.$http({ url: `/project/${project.id}`, method: 'delete'}).then(response => {
+              this.$showMessage(response.data.message, 'success')
+              this.projectList.splice(index, 1);
+              this.$delete(project,'deleting')
+            }).catch(error => {
+              this.$delete(project,'deleting')
+              let data = error.response.data || {}
+              this.$showMessage(data.message || 'Fail to remove project', 'error')
+            })
+          }
         })
       },
 
+      editProject(project) {
+        this.$refs.projectedit.open(project)
+      }
     },
   }
 </script>

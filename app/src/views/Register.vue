@@ -72,8 +72,7 @@ export default {
 
           if (data.invalid_form) {
             for (const [key, value] of Object.entries(data.invalid_form)) {
-              console.log(key)
-              fields_with_error += value.join(',')
+              fields_with_error += key.replace(key, '') + value.join(',')
             }
           }
 
