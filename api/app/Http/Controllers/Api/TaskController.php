@@ -20,7 +20,7 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         return response()->json([
-            'tasks' => Task::fromUser($this->user)->get()
+            'tasks' => Task::with('project')->fromUser($this->user)->get()
         ], 200);
     }
 
