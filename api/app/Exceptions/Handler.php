@@ -5,9 +5,9 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
@@ -47,11 +47,16 @@ class Handler extends ExceptionHandler
     {
         $rendered = parent::render($request, $e);
 
-        return response()->json([
-            'error' => [
-                'code' => $rendered->getStatusCode(),
-                'message' => $e->getMessage()
-            ]
-        ], $rendered->getStatusCode());
+        $error = [
+            'message' => $e->getMessage(),
+            'code' => $rendered->getStatusCode()
+        ];
+
+        if ($e instanceof ValidationException && $e->getResponse()) {
+            $r = $e->getResponse();
+            $error['invalid_form'] =  $r->original;
+        }
+
+        return response()->json($error, $rendered->getStatusCode());
     }
 }

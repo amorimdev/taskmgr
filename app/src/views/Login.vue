@@ -57,7 +57,7 @@ export default {
         }).catch(error => {
           this.loading = false
           let data = error.response.data || {}
-          this.$showMessage(data.error || 'Fail to login', 'error')
+          this.$showMessage(data.message || 'Fail to login', 'error')
         })
 
       }

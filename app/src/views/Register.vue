@@ -11,9 +11,9 @@
               </v-toolbar>
               <v-card-text>
                 <v-form v-model="valid" ref="form">
-                  <v-text-field label="Name" :rules="rules.required" v-model="formData.name" name="name" type="text" />
-                  <v-text-field label="E-mail" :rules="rules.email" v-model="formData.email" name="email" type="email" />
-                  <v-text-field label="Password" :rules="rules.password"  v-model="formData.password" name="password" type="password"/>
+                  <v-text-field label="Name" :rules="rules.required" v-model="formData.name" name="name" type="text" ref="name"/>
+                  <v-text-field label="E-mail" :rules="rules.email" v-model="formData.email" name="email" type="email" ref="email"/>
+                  <v-text-field label="Password" :rules="rules.password"  v-model="formData.password" name="password" type="password" ref="password"/>
                 </v-form>
               </v-card-text>
               <v-card-actions>
@@ -35,6 +35,7 @@ export default {
     loading: false,
     valid: false,
     formData: {},
+    remote_errors: {},
     rules: {
       email: [
         v => !!v || 'E-mail is required',
@@ -54,7 +55,9 @@ export default {
 
     register() {
       if (this.$refs.form.validate()) {
+        this.remote_errors = {}
         this.loading = true
+        this.remote_errors
 
         this.$http({ url: '/register', method: 'post', data: this.formData}).then(response => {
           this.loading = false
@@ -64,7 +67,17 @@ export default {
         }).catch(error => {
           this.loading = false
           let data = error.response.data || {}
-          this.$showMessage(data.message || 'Fail to register new user', 'error')
+
+          let fields_with_error = ' '
+
+          if (data.invalid_form) {
+            for (const [key, value] of Object.entries(data.invalid_form)) {
+              console.log(key)
+              fields_with_error += value.join(',')
+            }
+          }
+
+          this.$showMessage(data.message + fields_with_error || 'Fail to register new user', 'error')
         })
 
       }

@@ -15,7 +15,30 @@ services:
     restart: always
     networks:
       - taskmgr
+    volumes:
+      - ./storage:/app/storage
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_DATABASE=taskmgr
+      - DB_USERNAME=root
+      - DB_PASSWORD=JwBeBbf9L{Sc(f8T
+
+  mariadb:
+    image: mariadb:10.4-bionic
+    networks:
+      - taskmgr
+    restart: always
+    volumes:
+      - mariadb:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: JwBeBbf9L{Sc(f8T
+      MYSQL_DATABASE: taskmgr
 
 networks:
   taskmgr:
     driver: bridge
+
+volumes:
+  mariadb:

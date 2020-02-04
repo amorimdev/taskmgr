@@ -1,44 +1,44 @@
 version: '3'
 services:
   web:
-    image: registry.gitlab.com/eduardo-marcolino/taskmgr/app:lastest
     restart: always
     networks:
       - taskmgr
+    image: nginx:alpine
     ports:
-      - "80:80"
+      - "8082:80"
     links:
+      - app
       - api
+    volumes:
+      - ./.docker/nginx.conf:/etc/nginx/conf.d/default.conf
+
+  app:
+    restart: always
+    networks:
+      - taskmgr
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    command: npm run serve
 
   api:
-    image: registry.gitlab.com/eduardo-marcolino/taskmgr/api:lastest
     restart: always
     networks:
+      - development_development
       - taskmgr
+    build:
+      context: ./api
+      dockerfile: Dockerfile
     volumes:
-      - ./storage:/app/storage
-    environment:
-      - DB_CONNECTION=mysql
-      - DB_HOST=mariadb
-      - DB_PORT=3306
-      - DB_DATABASE=taskmgr
-      - DB_USERNAME=root
-      - DB_PASSWORD=JwBeBbf9L{Sc(f8T
-
-  mariadb:
-    image: mariadb:10.4-bionic
-    networks:
-      - taskmgr
-    restart: always
-    volumes:
-      - mariadb:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: JwBeBbf9L{Sc(f8T
-      MYSQL_DATABASE: taskmgr
+      - ./api:/app
+      - ./app/vendor
 
 networks:
   taskmgr:
     driver: bridge
-
-volumes:
-  mariadb:
+  development_development:
+    external: true
