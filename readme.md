@@ -1,3 +1,7 @@
+[![pipeline status](https://gitlab.com/eduardo-marcolino/taskmgr/badges/master/pipeline.svg)](https://gitlab.com/eduardo-marcolino/taskmgr/-/commits/master)
+
+[![coverage report](https://gitlab.com/eduardo-marcolino/taskmgr/badges/master/coverage.svg)](https://gitlab.com/eduardo-marcolino/taskmgr/-/commits/master)
+
 # This challenge involves the creation of a multi-user task manager web application.
 
 The application should include the following features:

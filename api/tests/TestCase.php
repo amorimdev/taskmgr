@@ -1,4 +1,5 @@
 <?php
+use Faker\Factory as Faker;
 
 abstract class TestCase extends Laravel\Lumen\Testing\TestCase
 {
@@ -10,5 +11,9 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
     public function createApplication()
     {
         return require __DIR__.'/../bootstrap/app.php';
+    }
+
+    public function faker() {
+        return Faker::create();
     }
 }
