@@ -38,9 +38,9 @@ Devops and online link to view the project
 ### Building instructions
 
 ```bash
-docker build -t registry.gitlab.com/eduardo-marcolino/taskmgr/app:lastest -f Dockerfile .
+docker build -t registry.gitlab.com/eduardo-marcolino/taskmgr/app:latest -f Dockerfile .
 ```
 
 ```bash
-docker build -t registry.gitlab.com/eduardo-marcolino/taskmgr/api:lastest -f api/Dockerfile ./api
+docker build -t registry.gitlab.com/eduardo-marcolino/taskmgr/api:latest -f api/Dockerfile ./api
 ```
