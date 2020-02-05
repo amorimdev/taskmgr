@@ -114,7 +114,7 @@
 
     computed: {
       ...mapGetters([
-        'projectList'
+        'projectList',
       ]),
     },
 
@@ -135,12 +135,13 @@
       },
 
       deleteProject(project, index) {
-        this.$refs.confirm.open('Are you sure to delete?', 'This record can\'t be recovered', { color: 'red' }).then(confirm => {
+        this.$refs.confirm.open('Are you sure to delete?', 'All tasks will be removed. This record can\'t be recovered', { color: 'red' }).then(confirm => {
           if(confirm) {
             this.$set(project,'deleting', true)
             this.$http({ url: `/project/${project.id}`, method: 'delete'}).then(response => {
               this.$showMessage(response.data.message, 'success')
-              this.projectList.splice(index, 1);
+              this.$store.commit('setTasks', this.$store.getters.taskList.filter(task => task.project_id !== project.id))
+              this.projectList.splice(index, 1)
               this.$delete(project,'deleting')
             }).catch(error => {
               this.$delete(project,'deleting')

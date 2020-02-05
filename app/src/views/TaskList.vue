@@ -152,7 +152,7 @@
       createTask(task) {
         this.$set(task,'creating', true)
         this.$http({ url: '/task', method: 'post', data: task}).then(response => {
-          this.taskList.push(response.data.task)
+          this.taskList.unshift(response.data.task)
           this.$showMessage(response.data.message, 'success')
           this.$delete(task,'creating')
           this.$refs.form.reset()

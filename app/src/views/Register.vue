@@ -3,7 +3,7 @@
     <v-content>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
-          <v-col cols="12" sm="8" md="4">
+          <v-col cols="12" sm="8" md="4" class="ml-5">
             <v-card class="elevation-12">
               <v-toolbar color="orange darken-1" dark flat>
                 <v-toolbar-title>Register form</v-toolbar-title>

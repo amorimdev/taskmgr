@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Task;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class ProjectController extends Controller
@@ -15,7 +17,7 @@ class ProjectController extends Controller
         $this->user = $request->current_user;
     }
 
-    public function index(Request $request)
+    public function index()
     {
         return response()->json([
             'projects' => $this->user->projects
@@ -38,7 +40,7 @@ class ProjectController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, $id)
+    public function show($id)
     {
         $project = $this->findOrFail($id);
         $project->load('tasks');
@@ -65,10 +67,14 @@ class ProjectController extends Controller
         ], 200);
     }
 
-    public function delete(Request $request, $id)
+    public function delete($id)
     {
         $project = $this->findOrFail($id);
-        $project->delete();
+
+        DB::transaction(function() use ($project) {
+            Task::destroy($project->tasks->pluck('id'));
+            $project->delete();
+        });
 
         return response()->json([
             'message' => 'Project successfully deleted',

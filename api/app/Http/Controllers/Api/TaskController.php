@@ -17,10 +17,16 @@ class TaskController extends Controller
         $this->user = $request->current_user;
     }
 
-    public function index(Request $request)
+    public function index()
     {
+        $tasks = Task::with('project')
+            ->fromUser($this->user)
+            ->orderBy('created_at', 'DESC')
+            ->get()
+        ;
+
         return response()->json([
-            'tasks' => Task::with('project')->fromUser($this->user)->get()
+            'tasks' => $tasks
         ], 200);
     }
 
@@ -43,7 +49,7 @@ class TaskController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, $id)
+    public function show($id)
     {
         $task = $this->findTaskOrFail($id, false)
             ->makeHidden('project_id')
@@ -75,7 +81,7 @@ class TaskController extends Controller
         ], 200);
     }
 
-    public function close(Request $request, $id)
+    public function close($id)
     {
         $task = $this->findTaskOrFail($id);
 
@@ -88,7 +94,7 @@ class TaskController extends Controller
         ], 200);
     }
 
-    public function delete(Request $request, $id)
+    public function delete($id)
     {
         $task = $this->findTaskOrFail($id);
         $task->delete();
@@ -106,7 +112,7 @@ class TaskController extends Controller
     {
         $task = Task::fromUser($this->user)->findOrFail($id);
         if ($openTaskRequired && $task->isClosed()) {
-            throw new Exception('Operantion requires an open task');
+            throw new Exception('Operation requires an open task');
         }
         return $task;
     }
