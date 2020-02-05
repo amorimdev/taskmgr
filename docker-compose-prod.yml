@@ -24,6 +24,8 @@ services:
       - DB_DATABASE=taskmgr
       - DB_USERNAME=root
       - DB_PASSWORD=JwBeBbf9L{Sc(f8T
+      - APP_KEY=GczEbyEYUi8SLcMUSq1PkDIclxOYEL8YV13A63kjULiBa4t4RnQXpxMvuz1J20wq
+      - JWT_KEY=f8uVfaQB8SXuxZabHmrvuOoYZvG6NGugsPHKe44wAvDhkVIgoc7V07z06XiQL8b2
 
   mariadb:
     image: mariadb:10.4-bionic
