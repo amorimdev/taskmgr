@@ -19,6 +19,8 @@ $router->group(['prefix' => env('API_PREFIX'), 'namespace' => 'Api'], function (
 
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
 
+        $router->get('/profile', 'AuthController@profile');
+
         $router->get('/projects', 'ProjectController@index');
         $router->post('/project', 'ProjectController@create');
         $router->get('/project/{id}', 'ProjectController@show');

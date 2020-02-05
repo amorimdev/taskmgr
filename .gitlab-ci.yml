@@ -12,7 +12,7 @@ variables:
 
 stages:
   - test
-  - build
+  #- build
 
 test:
   image: $CI_REGISTRY_IMAGE/api:latest
@@ -26,17 +26,17 @@ test:
     - docker-php-ext-enable xdebug
     - composer install
     - php artisan migrate
-    - ./vendor/bin/phpunit --coverage-text --colors=never
+    - ./vendor/bin/phpunit --configuration phpunit.xml --coverage-text --colors=never
 
-build:
-  image: docker:latest
-  services:
-  - docker:dind
-  stage: build
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - docker build -t $CI_REGISTRY_IMAGE/api:latest -f api/Dockerfile ./api
-    - docker build -t $CI_REGISTRY_IMAGE/app:latest -f Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE/api:latest
-    - docker push $CI_REGISTRY_IMAGE/app:latest
+#build:
+#  image: docker:latest
+#  services:
+#  - docker:dind
+#  stage: build
+#  before_script:
+#    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#  script:
+#    - docker build -t $CI_REGISTRY_IMAGE/api:latest -f api/Dockerfile ./api
+#    - docker build -t $CI_REGISTRY_IMAGE/app:latest -f Dockerfile .
+#    - docker push $CI_REGISTRY_IMAGE/api:latest
+#    - docker push $CI_REGISTRY_IMAGE/app:latest

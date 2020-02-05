@@ -21,7 +21,7 @@ class AuthController extends Controller
 
         if (!$user || !$user->checkPassword($request->input('password'))) {
             return response()->json([
-                'error' => 'Invalid credentials'
+                'message' => 'Invalid credentials'
             ], 400);
         }
 
@@ -52,5 +52,9 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'User successfully registred',
         ], 200);
+    }
+
+    public function profile(Request $request) {
+        return $request->current_user;
     }
 }
