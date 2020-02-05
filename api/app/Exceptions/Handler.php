@@ -49,12 +49,16 @@ class Handler extends ExceptionHandler
 
         $error = [
             'message' => $e->getMessage(),
-            'code' => $rendered->getStatusCode()
+            'code' => $rendered->getStatusCode(),
         ];
 
         if ($e instanceof ValidationException && $e->getResponse()) {
             $r = $e->getResponse();
             $error['invalid_form'] =  $r->original;
+        }
+
+        if ($e instanceof ModelNotFoundException) {
+            $error['message'] =  class_basename($e->getModel()).' not found';
         }
 
         return response()->json($error, $rendered->getStatusCode());
