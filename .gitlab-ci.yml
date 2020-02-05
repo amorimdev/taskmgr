@@ -12,7 +12,7 @@ variables:
 
 stages:
   - test
-  #- build
+  - build
 
 test:
   image: $CI_REGISTRY_IMAGE/api:latest
