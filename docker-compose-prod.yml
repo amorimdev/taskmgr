@@ -1,7 +1,7 @@
 version: '3'
 services:
   web:
-    image: registry.gitlab.com/eduardo-marcolino/taskmgr/app:lastest
+    image: registry.gitlab.com/eduardo-marcolino/taskmgr/app:latest
     restart: always
     networks:
       - taskmgr
@@ -11,7 +11,7 @@ services:
       - api
 
   api:
-    image: registry.gitlab.com/eduardo-marcolino/taskmgr/api:lastest
+    image: registry.gitlab.com/eduardo-marcolino/taskmgr/api:latest
     restart: always
     networks:
       - taskmgr

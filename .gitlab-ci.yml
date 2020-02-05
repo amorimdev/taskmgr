@@ -1,0 +1,42 @@
+variables:
+  MYSQL_DATABASE: taskmgr
+  MYSQL_ROOT_PASSWORD: root
+  DB_HOST: mariadb
+  DB_USERNAME: root
+  DB_PASSWORD: root
+  DB_DATABASE: taskmgr
+  APP_ENV: local
+  APP_KEY: GczEbyEYUi8SLcMUSq1PkDIclxOYEL8YV13A63kjULiBa4t4RnQXpxMvuz1J20wq
+  JWT_KEY: f8uVfaQB8SXuxZabHmrvuOoYZvG6NGugsPHKe44wAvDhkVIgoc7V07z06XiQL8b2
+  DOCKER_DRIVER: overlay2
+
+stages:
+  - test
+  - build
+
+test:
+  image: $CI_REGISTRY_IMAGE/api:latest
+  services:
+    - mariadb:10.4-bionic
+  stage: test
+  script:
+    - cd api
+    - apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS
+    - pecl install xdebug
+    - docker-php-ext-enable xdebug
+    - composer install
+    - php artisan migrate
+    - ./vendor/bin/phpunit --coverage-text --colors=never
+
+build:
+  image: docker:latest
+  services:
+  - docker:dind
+  stage: build
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/api:latest -f api/Dockerfile ./api
+    - docker build -t $CI_REGISTRY_IMAGE/app:latest -f Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/api:latest
+    - docker push $CI_REGISTRY_IMAGE/app:latest
