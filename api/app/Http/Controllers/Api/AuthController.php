@@ -25,12 +25,14 @@ class AuthController extends Controller
             ], 400);
         }
 
+        // @codeCoverageIgnoreStart
         $payload = [
             'sub' => $user->id,
             'iss' => "taskmgr",
             'iat' => time(),
             'exp' => time() + 60*60
         ];
+        // @codeCoverageIgnoreEnd
 
         return response()->json([
             'token' => JWT::encode($payload, env('JWT_KEY')),

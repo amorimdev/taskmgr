@@ -171,6 +171,29 @@ class TaskTest extends TestCase
 
     }
 
+    public function testListTasks()
+    {
+        list($user, $token, $project) = $this->resource();
+        $headers = ['Authorization' => 'Bearer '.$token];
+
+        $total = 0;
+        foreach(range(1, rand(2,5)) as $index) {
+            $this->json('POST', '/api/task', [
+                'description' => $this->faker()->sentence(),
+                'project_id' => $project->id
+            ], $headers);
+            $total++;
+        }
+
+        $request = $this->json('GET', '/api/tasks', [], $headers);
+
+        $this->assertResponseOk();
+        $this->seeJsonStructure(['tasks' => [
+            '*' => ['description', 'created_at', 'updated_at', 'finished_at', 'is_closed']
+        ]]);
+        $this->assertCount($total, $request->response->getData()->tasks);
+    }
+
     public function testUpdateTask()
     {
         list($user, $token, $project) = $this->resource();
